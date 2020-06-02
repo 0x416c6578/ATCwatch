@@ -63,7 +63,11 @@ void init_accl() {
   do
   {
     delay(10);
-    rslt = bma4_read_regs(0x5Eu, data, 0x40u, &dev);
+
+    
+    rslt = bma4_read_regs(0x5Eu, data, 0x40u, &dev); //Error here: rslt is != 0 (error) and v4 is 0, causing this to loop forever
+    
+    
     v4 = ((unsigned int)data[59] >> 4) & 1;
     delay(1);
   }
