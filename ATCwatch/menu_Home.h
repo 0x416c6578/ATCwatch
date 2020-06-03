@@ -33,38 +33,70 @@ class HomeScreen : public TheScreen
     {
       time_data_struct time_data = get_time();
       accl_data_struct accl_data = get_accl_data();
-
+      if (day_prev != time_data.day){
+        int currentDay = dayofweek(time_data.day, time_data.month, time_data.year);
+        switch (currentDay){
+          case 0:
+            sprintf(day_string, "Sun");
+            break;
+          case 1:
+            sprintf(day_string, "Mon");
+            break;
+          case 2:
+            sprintf(day_string, "Tue");
+            break;
+          case 3:
+            sprintf(day_string, "Wed");
+            break;
+          case 4:
+            sprintf(day_string, "Thu");
+            break;
+          case 5:
+            sprintf(day_string, "Fri");
+            break;
+          case 6:
+            sprintf(day_string, "Sat");
+            break;
+          default:
+            sprintf(day_string, "Unk");
+            break;
+        }
+      }
       char time_string[14];
       sprintf(time_string, "%02i:%02i:%02i", time_data.hr, time_data.min, time_data.sec);
       char date_string[14];
       sprintf(date_string, "%02i.%02i.%04i", time_data.day, time_data.month, time_data.year);
-      displayPrintln(20, 70, time_string, 0xFFFF, 0x0000, 4);
-      displayPrintln(28, 104, date_string, 0xFFFF, 0x0000, 3);
+      
+      displayPrintln(20, 42, time_string, 0xFFFF, 0x0000, 4);
+      displayPrintln(20, 77, date_string, 0xFFFF, 0x0000, 3);
+      displayPrintln(20, 102, day_string, 0xFFFF, 0x0000, 3);
 
       displayPrintln(30, 140, (String)get_last_heartrate() + "     ", 0xFFFF, 0x0000, 2);
       displayPrintln(30, 140 + 24 + 2, (String)accl_data.steps + "     ", 0xFFFF, 0x0000, 2);
       displayPrintln(30, 140 + 24 + 2 + 24 + 2, get_push_msg(17), 0xFFFF, 0x0000, 2);
-
+      
       if (get_vars_ble_connected())
-        displayImage(190, 0, 24, 24, symbolBle1);
+        displayPrintln(1, 1, "Con   ", 0xFFFF, 0x0000, 2);
       else
-        displayImage(190, 0, 24, 24, symbolBle2);
-
-
-      if (get_charge()) {
-        if (!charge_symbol_change)displayImage(216, 0, 24, 24, symbolBattery2);
-        charge_symbol_change = true;
-        int batteryPer = get_battery_percent();
-        String batteryDisplay = "";
-        if (batteryPer < 10)
-          batteryDisplay = " " + (String)batteryPer;
-        else
-          batteryDisplay = (String)batteryPer;
-        displayPrintln(222, 8, batteryDisplay, 0x0000, 0xFFFF);
+        displayPrintln(1, 1, "Discon", 0xFFFF, 0x0000, 2);
+        
+      char bat_string[10];
+      if (!get_charge()) {
+//        if (!charge_symbol_change)displayImage(27, 1, 24, 24, symbolBattery2);
+//        charge_symbol_change = true;
+//        int batteryPer = get_battery_percent();
+//        String batteryDisplay = "";
+//        if (batteryPer < 10)
+//          batteryDisplay = " " + (String)batteryPer;
+//        else
+//          batteryDisplay = (String)batteryPer;
+//        displayPrintln(33, 9, batteryDisplay, 0x0000, 0xFFFF);
+        sprintf(bat_string, "%03i%% C", get_battery_percent());
       } else {
-        displayImage(216, 0, 24, 24, symbolBattery1);
-        charge_symbol_change = false;
+        sprintf(bat_string, "%03i%%  ", get_battery_percent());
       }
+      displayPrintln(1, 18, bat_string, 0xFFFF, 0x0000, 2);
+      day_prev = time_data.day;
     }
 
     virtual void up()
@@ -85,5 +117,7 @@ class HomeScreen : public TheScreen
     }
   private:
     bool charge_symbol_change = false;
+    int day_prev = -1;
+    char day_string[5] = {'U','n','k'};
 
 };

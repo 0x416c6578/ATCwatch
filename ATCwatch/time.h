@@ -16,3 +16,4 @@ void init_time();
 time_data_struct get_time();
 void SetDateTimeString(String datetime);
 String GetDateTimeString();
+int dayofweek(int d, int m, int y);
