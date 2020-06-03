@@ -29,6 +29,7 @@ bool stepsWhereReseted = false;
 
 void setup() {
   delay(500);
+
   if (get_button()) {//if button is pressed on startup goto Bootloader
     NRF_POWER->GPREGRET = 0x01;
     NVIC_SystemReset();
