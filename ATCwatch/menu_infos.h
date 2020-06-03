@@ -27,9 +27,9 @@ class InfosScreen : public TheScreen
       displayImage(120 - (72 / 2), 240-72, 72, 72, symbolInfos);
       displayPrintln(0, 0, "Infos:", 0xFFFF, 0x0000, 2);
       displayPrintln(0, 16+2, "Firmware By:", 0xFFFF, 0x0000, 2);
-      displayPrintln(0, 16 + 16+5, "Alex Underwood", 0xFFFF, 0x0000, 2);
-      displayPrintln(0, 16 + 16 + 16+6, "gh/0x416c6578", 0xFFFF, 0x0000, 2);
-      displayPrintln(20, 16 + 16 + 16 + 16 + 16, "Version:" + (String)versionString, 0xFFFF, 0x0000, 2);
+      displayPrintln(0, 16 + 16+5, "Aaron Christophel", 0xFFFF, 0x0000, 2);
+      displayPrintln(0, 16 + 16 + 16+6, "Modified by", 0xFFFF, 0x0000, 2);
+      displayPrintln(20, 16 + 16 + 16 + 16 + 16, "gh/0x416c6578", 0xFFFF, 0x0000, 2);
       displayPrintln(20, 16 + 16 + 16 + 16 + 16 + 16, "Compiled:", 0xFFFF, 0x0000, 2);
       displayPrintln(20, 16 + 16 + 16 + 16 + 16 + 16 + 16+4, (String)__DATE__ , 0xFFFF, 0x0000, 2);
       displayPrintln(20, 16 + 16 + 16 + 16 + 16 + 16 + 16 + 16+8, (String)__TIME__ , 0xFFFF, 0x0000, 2);

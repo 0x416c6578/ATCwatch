@@ -63,7 +63,7 @@ class HomeScreen : public TheScreen
         }
       }
       char time_string[14];
-      sprintf(time_string, "%02i:%02i:%02i", time_data.hr, time_data.min, time_data.sec);
+      sprintf(time_string, "%02i:%02i", time_data.hr, time_data.min);
       char date_string[14];
       sprintf(date_string, "%02i.%02i.%04i", time_data.day, time_data.month, time_data.year);
       
