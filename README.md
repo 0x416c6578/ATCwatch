@@ -30,3 +30,6 @@ You can use and edit the code as long as you mention me (Aaron Christophel and h
 If you want to use the code or parts of it commercial please write an email to: info@atcnetz.de
 
 This code uses the BMA421 Library wich is made by Bosch and this is under copyright by Bosch Sensortech GmbH
+
+## Linux
+See 
