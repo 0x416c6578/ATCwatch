@@ -19,9 +19,9 @@ BLECharacteristic   RXchar        = BLECharacteristic("0001", BLEWriteWithoutRes
 bool vars_ble_connected = false;
 
 void init_ble() {
-  blePeripheral.setLocalName("ATCwatch");
+  blePeripheral.setLocalName("AlexP8");
   blePeripheral.setAdvertisingInterval(500);
-  blePeripheral.setDeviceName("ATCwatch");
+  blePeripheral.setDeviceName("AlexP8");
   blePeripheral.setAdvertisedServiceUuid(main_service.uuid());
   blePeripheral.addAttribute(main_service);
   blePeripheral.addAttribute(TXchar);
@@ -68,13 +68,13 @@ void ble_written(BLECentral& central, BLECharacteristic& characteristic) {
 }
 
 void ble_write(String Command) {
-  Command = Command + "\r\n";
-  while (Command.length() > 0) {
-    const char* TempSendCmd;
-    String TempCommand = Command.substring(0, 20);
-    TempSendCmd = &TempCommand[0];
-    TXchar.setValue(TempSendCmd);
-    Command = Command.substring(20);
+  Command = Command + "\r\n"; //Add newline
+  while (Command.length() > 0) { //While the length of the string is > 0
+    const char* TempSendCmd; 
+    String TempCommand = Command.substring(0, 20); //Get the first 20 characters (index 0-19) of the string as a String object
+    TempSendCmd = &TempCommand[0]; //Write that into the send buffer as a char array
+    TXchar.setValue(TempSendCmd); //Send those 20 bytes
+    Command = Command.substring(20); //Move along to the next 20 bytes of the thing to send
   }
 }
 
@@ -115,7 +115,7 @@ void filterCmd(String Command) {
   } else if (Command == "AT+SN") {
     ble_write("AT+SN:P8");
   } else if (Command.substring(0, 12) == "AT+CONTRAST=") {
-    String contrastTemp = Command.substring(12);
+    String contrastTemp = Command.substring(12); //Ommitting the end value will go from that index to the end of the string
     if (contrastTemp == "100")
       set_backlight(1);
     else if (contrastTemp == "175")

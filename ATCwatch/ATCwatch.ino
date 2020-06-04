@@ -62,29 +62,22 @@ void setup() {
 
 void loop() {
   ble_feed();//manage ble connection
-  if (!get_button())watchdog_feed();//reset the watchdog if the push button is not pressed, if it is pressed for more then WATCHDOG timeout the watch will reset
+  if (!get_button())
+    watchdog_feed();//reset the watchdog if the push button is not pressed, if it is pressed for more then WATCHDOG timeout the watch will reset
   if (get_sleep()) {//see if we are sleeping
     sleep_wait();//just sleeping
   } else {//if  we are awake do display stuff etc
     check_sleep_times();//check if we should go sleeping again
-    display_screen();//manage menu and display stuff
+    display_screen();//manage menu and display stuff (call main() in the current screen class)
     check_battery_status();// check battery status. if lower than XX show message
   }
   if (get_timed_int()) {//Theorecticly every 40ms via RTC2 but since the display takes longer its not accurate at all when display on
-    //Raise to wake (disabled for batter tests)
-//    if (get_sleep()) {
-//      if (acc_input())
-//        sleep_up(WAKEUP_ACCL);//check if the hand was lifted and turn on the display if so
-//    }
-    time_data_struct time_data = get_time();
-    if (time_data.hr == 0) {// check for new day
-      if (!stepsWhereReseted) {//reset steps on a new day
-        stepsWhereReseted = true;
-        reset_step_counter();
-      }
-    } else stepsWhereReseted = false;
-
-    check_timed_heartrate(time_data.min);//Meassure HR every 15minutes
+    //Raise to wake (disabled for battery tests)
+    /*if (get_sleep()) {
+      if (acc_input())
+        sleep_up(WAKEUP_ACCL);//check if the hand was lifted and turn on the display if so
+    }*/
+    //check_timed_heartrate(time_data.min);//Meassure HR every 15minutes (disabled for battery testing
   }
   gets_interrupt_flag();//check interrupt flags and do something with it
 }

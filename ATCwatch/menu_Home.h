@@ -12,6 +12,7 @@
 #include "accl.h"
 #include "push.h"
 #include "heartrate.h"
+#include "inputoutput.h"
 
 
 class HomeScreen : public TheScreen
@@ -24,7 +25,7 @@ class HomeScreen : public TheScreen
     {
       displayRect(0, 0, 240, 240, 0x0000);
       charge_symbol_change = false;
-      displayImage(0, 136, 24, 24, symbolHeartSmall);
+      //displayImage(0, 136, 24, 24, symbolHeartSmall);
       displayImage(0, 136 + 24 + 2, 24, 24, symbolStepsSmall);
       displayImage(0, 136 + 24 + 2 + 24 + 2, 24, 24, symbolMsgSmall);
     }
@@ -61,6 +62,7 @@ class HomeScreen : public TheScreen
             sprintf(day_string, "Unk");
             break;
         }
+        reset_step_counter(); //Handle resetting step counter here
       }
       char time_string[14];
       sprintf(time_string, "%02i:%02i", time_data.hr, time_data.min);
@@ -69,31 +71,31 @@ class HomeScreen : public TheScreen
       
       displayPrintln(20, 42, time_string, 0xFFFF, 0x0000, 4);
       displayPrintln(20, 77, date_string, 0xFFFF, 0x0000, 3);
-      displayPrintln(20, 102, day_string, 0xFFFF, 0x0000, 3);
+      displayPrintln(20, 105, day_string, 0xFFFF, 0x0000, 3);
 
-      displayPrintln(30, 140, (String)get_last_heartrate() + "     ", 0xFFFF, 0x0000, 2);
+      //displayPrintln(30, 140, (String)get_last_heartrate() + "     ", 0xFFFF, 0x0000, 2); //Display last heartrate disabled for battery tests
       displayPrintln(30, 140 + 24 + 2, (String)accl_data.steps + "     ", 0xFFFF, 0x0000, 2);
       displayPrintln(30, 140 + 24 + 2 + 24 + 2, get_push_msg(17), 0xFFFF, 0x0000, 2);
       
       if (get_vars_ble_connected())
-        displayPrintln(1, 1, "Con   ", 0xFFFF, 0x0000, 2);
+        displayPrintln(1, 1, "BT Up  ", 0xFFFF, 0x0000, 2);
       else
-        displayPrintln(1, 1, "Discon", 0xFFFF, 0x0000, 2);
+        displayPrintln(1, 1, "BT Down", 0xFFFF, 0x0000, 2);
         
       char bat_string[10];
       if (!get_charge()) {
-//        if (!charge_symbol_change)displayImage(27, 1, 24, 24, symbolBattery2);
-//        charge_symbol_change = true;
-//        int batteryPer = get_battery_percent();
-//        String batteryDisplay = "";
-//        if (batteryPer < 10)
-//          batteryDisplay = " " + (String)batteryPer;
-//        else
-//          batteryDisplay = (String)batteryPer;
-//        displayPrintln(33, 9, batteryDisplay, 0x0000, 0xFFFF);
-        sprintf(bat_string, "%03i%% C", get_battery_percent());
+        /*if (!charge_symbol_change)displayImage(27, 1, 24, 24, symbolBattery2);
+        charge_symbol_change = true;
+        int batteryPer = get_battery_percent();
+        String batteryDisplay = "";
+        if (batteryPer < 10)
+          batteryDisplay = " " + (String)batteryPer;
+        else
+          batteryDisplay = (String)batteryPer;
+        displayPrintln(33, 9, batteryDisplay, 0x0000, 0xFFFF);*/
+        sprintf(bat_string, "%02i%% C", get_battery_percent());
       } else {
-        sprintf(bat_string, "%03i%%  ", get_battery_percent());
+        sprintf(bat_string, "%02i%%  ", get_battery_percent());
       }
       displayPrintln(1, 18, bat_string, 0xFFFF, 0x0000, 2);
       day_prev = time_data.day;
@@ -111,6 +113,7 @@ class HomeScreen : public TheScreen
 
     virtual void left()
     {
+      ble_write("TESTSTRING");   
     }
     virtual void right()
     {
