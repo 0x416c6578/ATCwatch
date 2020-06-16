@@ -32,4 +32,5 @@ If you want to use the code or parts of it commercial please write an email to: 
 This code uses the BMA421 Library wich is made by Bosch and this is under copyright by Bosch Sensortech GmbH
 
 ## Linux
-See `linux-tutorial.md` for instructions on how to get the toolchain working on Linux
+See `linux-tutorial.md` for instructions on how to get the toolchain working on Linux  
+**I WILL NOT BE WORKING ON THIS FORK ANYMORE, MY WORK HAS MOVED TO [here](github.com/0x416c6578/p8-firmware)
