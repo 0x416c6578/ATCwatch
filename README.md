@@ -33,4 +33,4 @@ This code uses the BMA421 Library wich is made by Bosch and this is under copyri
 
 ## Linux
 See `linux-tutorial.md` for instructions on how to get the toolchain working on Linux  
-**I WILL NOT BE WORKING ON THIS FORK ANYMORE, MY WORK HAS MOVED TO [here](github.com/0x416c6578/p8-firmware)**
+**I WILL NOT BE WORKING ON THIS FORK ANYMORE, MY WORK HAS MOVED TO [here](https://github.com/0x416c6578/p8-firmware)**
