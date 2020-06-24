@@ -18,8 +18,8 @@ void init_inputoutput() {
     digitalWrite(PUSH_BUTTON_OUT, HIGH);
   }
 
-  set_led(0); //Boolean false
-  set_motor(0); //Boolean false
+  set_led(0);
+  set_motor(0);
   inputoutput_inited = true;
 }
 
@@ -33,35 +33,35 @@ bool get_button() {
   return button;
 }
 
-void set_led(bool state) { //Green LED on the back of the device
+void set_led(bool state) {
   if (state)
     digitalWrite(STATUS_LED, HIGH);
   else
     digitalWrite(STATUS_LED, LOW);
 }
 
-void set_motor(bool state) { //Internal function to turn the motor on or off
+void set_motor(bool state) {
   if (state)
     digitalWrite(VIBRATOR_OUT, LOW);
   else
     digitalWrite(VIBRATOR_OUT, HIGH);
 }
 
-void set_motor_ms(int ms) { //Set motor to go for a custom amount of millis
+void set_motor_ms(int ms) {
   set_motor(1);
   vibration_end_time = millis() + ms;
 }
 
-void set_motor_ms() { //Set motor to go for the time set by motor_power (default: 100)
+void set_motor_ms() {
   set_motor(1);
   vibration_end_time = millis() + motor_power;
 }
 
-void set_motor_power(int ms) { //Set motor power (time that the motor spins for on calling set_motor_ms() overloaded function)
+void set_motor_power(int ms) {
   motor_power = ms;
 }
 
-int get_motor_power() { //Get the motor spin time
+int get_motor_power() {
   return motor_power;
 }
 
@@ -70,7 +70,7 @@ void set_led_ms(int ms) {
   led_end_time = millis() + ms;
 }
 
-void check_inputoutput_times() { //Run by the interrupt handler, will stop the motor after the correct amount of milliseconds have ellapsed
+void check_inputoutput_times() {
   if (millis() > vibration_end_time)set_motor(0);
   if (millis() > led_end_time)set_led(0);
 }

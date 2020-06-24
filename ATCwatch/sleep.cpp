@@ -6,6 +6,7 @@
 #include "backlight.h"
 #include "heartrate.h"
 #include "touch.h"
+#include "accl.h"
 #include "menu.h"
 #include "inputoutput.h"
 #include <nrf_nvic.h>//interrupt controller stuff
@@ -17,6 +18,7 @@ bool sleep_sleeping = false;
 int wakeup_reason = 0;
 long lastaction = 0;
 volatile bool i2cReading = false;
+long last_sleep_check;
 
 void init_sleep() {
   //sd_power_dcdc_mode_set(NRF_POWER_DCDC_ENABLE);
@@ -47,6 +49,7 @@ void sleep_down() {
   if (!sleep_sleeping) {
     sleep_sleeping = true;
     disable_hardware();
+    set_was_touched(false);
   }
 }
 
@@ -78,8 +81,17 @@ void set_sleep_time() {
 }
 
 void check_sleep_times() {
-  if (millis() - lastaction > get_sleep_time_menu())
-    sleep_down();
+  if (millis() - last_sleep_check > 300) {
+    last_sleep_check = millis();
+
+    bool temp_sleep = false;
+    if (millis() - lastaction > get_sleep_time_menu())
+      temp_sleep = true;
+    if (get_wakeup_reason() == WAKEUP_ACCL && !get_was_touched() && !get_is_looked_at())
+      temp_sleep = true;
+    if (temp_sleep)
+      sleep_down();
+  }
 }
 
 volatile bool shot;

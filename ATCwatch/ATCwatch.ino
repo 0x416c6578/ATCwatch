@@ -3,7 +3,8 @@
 //If you want to use the code or parts of it commercial please write an email to: info@atcnetz.de
 
 //This code uses the BMA421 Library wich is made by Bosch and this is under copyright by Bosch Sensortech GmbH
-
+//https://github.com/BoschSensortec/BMA423-Sensor-API
+//Many Thanks to Daniel Thompson(https://github.com/daniel-thompson/wasp-os) to giving the Hint with the BMA423 Library
 
 #include "pinout.h"
 #include "watchdog.h"
@@ -24,12 +25,12 @@
 #include "accl.h"
 #include "push.h"
 #include "flash.h"
+#include "nrf52.h"
 
 bool stepsWhereReseted = false;
 
 void setup() {
   delay(500);
-
   if (get_button()) {//if button is pressed on startup goto Bootloader
     NRF_POWER->GPREGRET = 0x01;
     NVIC_SystemReset();
@@ -62,22 +63,18 @@ void setup() {
 
 void loop() {
   ble_feed();//manage ble connection
-  if (!get_button())
-    watchdog_feed();//reset the watchdog if the push button is not pressed, if it is pressed for more then WATCHDOG timeout the watch will reset
+  if (!get_button())watchdog_feed();//reset the watchdog if the push button is not pressed, if it is pressed for more then WATCHDOG timeout the watch will reset
   if (get_sleep()) {//see if we are sleeping
     sleep_wait();//just sleeping
   } else {//if  we are awake do display stuff etc
     check_sleep_times();//check if we should go sleeping again
-    display_screen();//manage menu and display stuff (call main() in the current screen class)
+    display_screen();//manage menu and display stuff
     check_battery_status();// check battery status. if lower than XX show message
   }
   if (get_timed_int()) {//Theorecticly every 40ms via RTC2 but since the display takes longer its not accurate at all when display on
-    //Raise to wake (disabled for battery tests)
-    /*if (get_sleep()) {
-      if (acc_input())
-        sleep_up(WAKEUP_ACCL);//check if the hand was lifted and turn on the display if so
-    }*/
-    //check_timed_heartrate(time_data.min);//Meassure HR every 15minutes (disabled for battery testing
+    if (get_sleep()) {
+      if (acc_input())sleep_up(WAKEUP_ACCL);//check if the hand was lifted and turn on the display if so
+    }
   }
   gets_interrupt_flag();//check interrupt flags and do something with it
 }

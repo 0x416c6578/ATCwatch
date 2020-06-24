@@ -1,4 +1,3 @@
-
 #pragma once
 #include "Arduino.h"
 #include "classScreen.h"
@@ -35,7 +34,7 @@ class HomeScreen : public TheScreen
       time_data_struct time_data = get_time();
       accl_data_struct accl_data = get_accl_data();
       if (day_prev != time_data.day){
-        int currentDay = dayofweek(time_data.day, time_data.month, time_data.year);
+        int currentDay = getDayOfWeek(time_data.day, time_data.month, time_data.year);
         switch (currentDay){
           case 0:
             sprintf(day_string, "Sun");

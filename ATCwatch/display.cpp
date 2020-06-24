@@ -26,7 +26,7 @@ void init_display() {
   display_clear();
 }
 
-bool drawChar(uint32_t x, uint32_t y, unsigned char c, uint16_t color, uint16_t bg, uint32_t size) {
+/* bool drawChar(uint32_t x, uint32_t y, unsigned char c, uint16_t color, uint16_t bg, uint32_t size) {
   if (c < 32)return false;
   if (c >= 127) {
     if (!last_uni_char) {
@@ -69,7 +69,7 @@ bool drawChar(uint32_t x, uint32_t y, unsigned char c, uint16_t color, uint16_t 
     }
   }
   for (int8_t i = 0; i < 5; i++) {
-    uint8_t line = font57[c * 5 + i];
+    uint8_t line = font[c * 5 + i];
     for (int8_t j = 0; j < 8; j++, line >>= 1) {
       if (line & 1) {
         displayRect(x + i * size, y + j * size, size, size, color);
@@ -82,9 +82,9 @@ bool drawChar(uint32_t x, uint32_t y, unsigned char c, uint16_t color, uint16_t 
     displayRect(x + 5 * size, y, size, 8 * size, bg);
   }
   return true;
-}
+} */
 
-void displayPrintln(uint32_t x, uint32_t y, String text, uint16_t color, uint16_t bg, uint32_t size) {
+/* void displayPrintln(uint32_t x, uint32_t y, String text, uint16_t color, uint16_t bg, uint32_t size) {
   int tempPosition = 0;
   for (int f = 0; f < text.length(); f++)
   {
@@ -96,7 +96,77 @@ void displayPrintln(uint32_t x, uint32_t y, String text, uint16_t color, uint16_
       tempPosition++;
     }
   }
+} */
+
+/*
+   Add pixel data into the LCD buffer for the current character's current pixel
+*/
+void setDisplayPixels(int charColumn, int charRow, uint8_t pixelsPerPixel, bool pixelInCharHere, uint16_t colourFG) {
+  int columnFontIndexScaledByPixelCount = charColumn * pixelsPerPixel;
+  int rowFontIndexScaledByPixelCount = charRow * pixelsPerPixel;
+  int pixelsPerRow = FONT_WIDTH * pixelsPerPixel;
+  for (int i = 0; i < pixelsPerPixel; i++) {
+    for (int j = 0; j < pixelsPerPixel; j++) {
+      lcd_buffer[2 * ((rowFontIndexScaledByPixelCount + i) * pixelsPerRow + (columnFontIndexScaledByPixelCount + j))] = pixelInCharHere ? (colourFG >> 8) & 0xFF : 0x00;
+      lcd_buffer[2 * ((rowFontIndexScaledByPixelCount + i) * pixelsPerRow + (columnFontIndexScaledByPixelCount + j)) + 1] = pixelInCharHere ? colourFG & 0xFF : 0x00;
+    }
+  }
 }
+
+/*
+   Write a character to the screen position (x,y)
+*/
+void writeChar(uint32_t x, uint32_t y, uint8_t pixelsPerPixel, char character, uint16_t colourFG) {
+  startWrite();
+
+  //Width and height of the character on the display
+  int characterDispWidth = FONT_WIDTH * pixelsPerPixel;
+  int characterDispHeight = 8 * pixelsPerPixel;
+  setAddrWindowDisplay(x, y, characterDispWidth, characterDispHeight);
+
+  int offset = FONT_NEEDS_OFFSET ? 32 : 0;
+
+  //Row goes between 0 and 7, column goes between 0 and the font width
+  for (int row = 0; row < 8; row++) {
+    for (int col = 0; col < FONT_WIDTH; col++) {
+      //(font[character][col] >> row) & 1 will return true if the font dictates that (col, row) should have a pixel there
+      setDisplayPixels(col, row, pixelsPerPixel, (font[character - offset][col] >> row) & 1, colourFG);
+    }
+  }
+  spiCommand(0x2C);
+  //Size 8 is probably the largest useful font, and at that size, a character takes up < 6000 bytes in the buffer, meaning we are nowhere near to filling up the buffer with a character
+  write_fast_spi(lcd_buffer, characterDispWidth * characterDispHeight * 2);
+  endWrite();
+}
+
+/*
+   Write a string to the specified position using a String object
+   TODO: implement dash '-' based wrapping for nicer string displaying
+*/
+void displayPrintln(uint32_t x, uint32_t y, String text, uint16_t color, uint16_t bg, uint32_t size) {
+  int currentLine = 0; //Current line
+  int charPos = 0; //Position of the character we are on along the line
+  int stringLen = text.length();
+  for (int i = 0; i < stringLen; i++) { //Loop through every character of the string
+    /*
+      In order to get dash wrapping, I added the * 2 to the end of the first if to test whether we will overlap with the NEXT character
+      I then also added the test to see if the character we are going to write would be a space (if so, don't add the dash)
+      Otherwise, I put a dash before the newline
+    */
+    if (x + charPos * size * FONT_WIDTH + size * charPos > 240 - FONT_WIDTH * size * 2) { //If printing the next character would result in it being of screen
+      if (text[i] != 32)
+        writeChar(x + charPos * size * FONT_WIDTH + size * charPos, y + currentLine * 8 * size, size, '-', color);
+      currentLine++;
+      charPos = 0;
+    }
+    writeChar(x + charPos * size * FONT_WIDTH + size * charPos, y + currentLine * 8 * size, size, text[i], color);
+    charPos++;
+  }
+}
+
+
+
+
 
 void displayRect(uint32_t x, uint32_t y, uint32_t w, uint32_t h, uint16_t color) {
   startWrite();

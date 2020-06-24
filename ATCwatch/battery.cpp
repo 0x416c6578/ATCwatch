@@ -40,7 +40,7 @@ int get_battery_percent() {
   return lastReturn;
 }
 
-int mv_to_percent(float mvolts) { //Will never return 100%
+int mv_to_percent(float mvolts) {
   if ( mvolts >= 4145 ) return 99;
   else if ( mvolts > 4010 ) return (99 - (int16_t)(4145 - mvolts) / 13);
   else if ( mvolts > 3920 ) return (90 - (int16_t)(4010 - mvolts) / 9);

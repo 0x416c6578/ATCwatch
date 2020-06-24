@@ -8,6 +8,8 @@
 #include "inputoutput.h"
 #include "inputoutput.h"
 #include "battery.h"
+#include "nrf52_bitfields.h"
+#include "nrf52.h"
 
 long last_button_press = 0;
 
@@ -67,7 +69,7 @@ void GPIOTE_IRQHandler()
       last_accl_state = accl_pin;
       NRF_GPIO->PIN_CNF[BMA421_INT] &= ~GPIO_PIN_CNF_SENSE_Msk;
       NRF_GPIO->PIN_CNF[BMA421_INT] |= ((last_accl_state ? GPIO_PIN_CNF_SENSE_Low : GPIO_PIN_CNF_SENSE_High) << GPIO_PIN_CNF_SENSE_Pos);
-      if (last_accl_state == false)set_accl_interrupt();
+      if (last_accl_state == false) set_accl_interrupt();
     }
   }
   (void)NRF_GPIOTE->EVENTS_PORT;
@@ -163,18 +165,18 @@ void interrupt_charged() {
   sleep_up(WAKEUP_CHARGED);
   set_sleep_time();
   if (get_charged())
-    set_motor_ms();
-  else
     set_led_ms(1000);
+  else
+    set_motor_ms();
 }
 
 void interrupt_charge() {
   sleep_up(WAKEUP_CHARGE);
   set_sleep_time();
   if (get_charge())
-    set_motor_ms();
-  else
     set_led_ms(1000);
+  else
+    set_motor_ms();
 }
 
 void interrupt_button() {
@@ -189,6 +191,7 @@ void interrupt_button() {
 }
 
 void interrupt_touch() {
+  set_was_touched(true);
   if (!sleep_up(WAKEUP_TOUCH)) {
     check_menu();
   } else {
